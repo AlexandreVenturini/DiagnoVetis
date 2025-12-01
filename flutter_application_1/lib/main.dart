@@ -5,7 +5,6 @@ import 'constants/app_theme.dart';
 import 'screens/treatment_care_screen.dart';
 import 'screens/pharmacy_screen.dart';
 
-
 void main() {
   runApp(const DiagnoVetisApp());
 }
@@ -16,6 +15,7 @@ class DiagnoVetisApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'DiagnoVetis',
       theme: AppTheme.lightTheme,
       initialRoute: '/',
@@ -23,7 +23,7 @@ class DiagnoVetisApp extends StatelessWidget {
         '/': (context) => const LoginRegisterScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/farmacia': (context) => const PharmacyScreen(),
-  '/cuidados-tratamento': (context) => const TreatmentCareScreen(),
+        '/cuidados-tratamento': (context) => const TreatmentCareScreen(),
       },
     );
   }

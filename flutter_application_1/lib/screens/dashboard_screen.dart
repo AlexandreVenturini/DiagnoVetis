@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/animal.dart';
-import '../widgets/animal_form.dart';
 import 'animal_details_screen.dart';
 import 'animal_form_screen.dart';
 
@@ -87,7 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard DiagnoVetis"),
+        title: const Text("DiagnoVetis"),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
