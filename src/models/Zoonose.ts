@@ -25,4 +25,52 @@ export class Zoonose {
     get nome(): string {
         return this._nome;
     }
+
+    get id(): number {
+        return this._id;
+    }
+
+    getId(): number {
+        return this._id;
+    }
+
+    getNome(): string {
+        return this._nome;
+    }
+
+    get agenteEtiologico(): string {
+        return this._agenteEtiologico;
+    }
+
+    getAgenteEtiologico(): string {
+        return this._agenteEtiologico;
+    }
+
+    get sintomas(): string {
+        return this._sintomas;
+    }
+
+    getSintomas(): string {
+        return this._sintomas;
+    }
+
+    get medidasPreventivas(): string {
+        return this._medidasPreventivas;
+    }
+
+    getMedidasPreventivas(): string {
+        return this._medidasPreventivas;
+    }
+
+    get grauRisco(): string {
+        return this._grauRisco;
+    }
+
+    getGrauRisco(): string {
+        return this._grauRisco;
+    }
+
+    isAltoRisco(): boolean {
+        return this._grauRisco.toLowerCase() === "alto";
+    }
 }

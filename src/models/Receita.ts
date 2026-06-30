@@ -1,27 +1,40 @@
-import { Consulta } from "./Consulta";
+import type { MedicamentoReceitado } from "./MedicamentoReceitado";
 
 export class Receita {
     private _id: number;
-    private _nome: string;
-    private _dosagem: string;
-    private _frequencia: string;
-    private _consulta: Consulta;
+    private _medicamentosReceitados: MedicamentoReceitado[];
 
     constructor(
         id: number,
-        nome: string,
-        dosagem: string,
-        frequencia: string,
-        consulta: Consulta
+        medicamentosReceitados: MedicamentoReceitado[] = []
     ) {
         this._id = id;
-        this._nome = nome;
-        this._dosagem = dosagem;
-        this._frequencia = frequencia;
-        this._consulta = consulta;
+        this._medicamentosReceitados = medicamentosReceitados;
     }
 
-    get nome(): string {
-        return this._nome;
+    get id(): number {
+        return this._id;
+    }
+
+    getId(): number {
+        return this._id;
+    }
+
+    get medicamentosReceitados(): MedicamentoReceitado[] {
+        return [...this._medicamentosReceitados];
+    }
+
+    getMedicamentosReceitados(): MedicamentoReceitado[] {
+        return [...this._medicamentosReceitados];
+    }
+
+    adicionarMedicamento(medicamentoReceitado: MedicamentoReceitado): void {
+        this._medicamentosReceitados.push(medicamentoReceitado);
+    }
+
+    removerMedicamento(medicamentoReceitado: MedicamentoReceitado): void {
+        this._medicamentosReceitados = this._medicamentosReceitados.filter(
+            medicamento => medicamento !== medicamentoReceitado
+        );
     }
 }

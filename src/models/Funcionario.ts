@@ -18,4 +18,24 @@ export class Funcionario {
     get dataAdmissao(): Date {
         return this._dataAdmissao;
     }
+
+    get id(): number {
+        return this._id;
+    }
+
+    getId(): number {
+        return this._id;
+    }
+
+    getDataAdmissao(): Date {
+        return this._dataAdmissao;
+    }
+
+    get medico(): Medico {
+        return this._medico;
+    }
+
+    getMedico(): Medico {
+        return this._medico;
+    }
 }

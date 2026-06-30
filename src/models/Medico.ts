@@ -22,7 +22,15 @@ export class Medico extends Pessoa {
         return this._especialidade;
     }
 
+    getEspecialidade(): string {
+        return this._especialidade;
+    }
+
     set especialidade(especialidade: string) {
+        this._especialidade = especialidade;
+    }
+
+    setEspecialidade(especialidade: string): void {
         this._especialidade = especialidade;
     }
 
@@ -30,7 +38,23 @@ export class Medico extends Pessoa {
         return this._crmv;
     }
 
+    getCrmv(): string {
+        return this._crmv;
+    }
+
     set crmv(crmv: string) {
         this._crmv = crmv;
+    }
+
+    setCrmv(crmv: string): void {
+        this._crmv = crmv;
+    }
+
+    temEspecialidade(): boolean {
+        return this._especialidade.trim().length > 0;
+    }
+
+    toString(): string {
+        return `${this.nome} - CRMV ${this._crmv}`;
     }
 }
