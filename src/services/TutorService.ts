@@ -1,25 +1,77 @@
 import { Tutor } from "../models/Tutor";
+import { Endereco } from "../models/Endereco";
+import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+
+interface EnderecoRaw {
+    rua: string;
+    numero: number;
+    bairro: string;
+    cidade: string;
+    uf: string;
+    cep: string;
+}
+
+interface TutorRaw {
+    id: number;
+    nome: string;
+    telefone: string;
+    email: string;
+    dataCadastro: string;
+    endereco: EnderecoRaw;
+}
+
+export const tutorRepository = new LocalStorageRepository<Tutor>(
+    "diagnovetis:tutores",
+    tutor => ({
+        id: tutor.id,
+        nome: tutor.nome,
+        telefone: tutor.telefone,
+        email: tutor.email,
+        dataCadastro: tutor.dataCadastro.toISOString(),
+        endereco: {
+            rua: tutor.endereco.rua,
+            numero: tutor.endereco.numero,
+            bairro: tutor.endereco.bairro,
+            cidade: tutor.endereco.cidade,
+            uf: tutor.endereco.uf,
+            cep: tutor.endereco.cep
+        }
+    }),
+    // pets sao religados pelo PetService ao carregar (Tutor nasce sem pets aqui)
+    raw => {
+        const tutorRaw = raw as TutorRaw;
+        return new Tutor(
+            tutorRaw.id,
+            tutorRaw.nome,
+            tutorRaw.telefone,
+            tutorRaw.email,
+            new Date(tutorRaw.dataCadastro),
+            new Endereco(
+                tutorRaw.endereco.rua,
+                tutorRaw.endereco.numero,
+                tutorRaw.endereco.bairro,
+                tutorRaw.endereco.cidade,
+                tutorRaw.endereco.uf,
+                tutorRaw.endereco.cep
+            )
+        );
+    }
+);
 
 export class TutorService {
-    private tutores: Tutor[] = [];
-
     listarTutores(): Tutor[] {
-        return this.tutores;
+        return tutorRepository.getAll();
     }
 
     adicionarTutor(tutor: Tutor): void {
-        this.tutores.push(tutor);
+        tutorRepository.add(tutor);
     }
 
     buscarPorId(id: number): Tutor | undefined {
-        return this.tutores.find(
-            tutor => tutor.id === id
-        );
+        return tutorRepository.getById(id);
     }
 
     removerTutor(id: number): void {
-        this.tutores = this.tutores.filter(
-            tutor => tutor.id !== id
-        );
+        tutorRepository.remove(id);
     }
 }

@@ -1,21 +1,53 @@
 import { Pet } from "../models/Pet";
+import { tutorRepository } from "./TutorService";
+import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+
+interface PetRaw {
+    id: number;
+    nome: string;
+    especie: string;
+    raca: string;
+    tutorId: number;
+}
+
+export const petRepository = new LocalStorageRepository<Pet>(
+    "diagnovetis:pets",
+    pet => ({
+        id: pet.id,
+        nome: pet.nome,
+        especie: pet.especie,
+        raca: pet.raca,
+        tutorId: pet.tutor.id
+    }),
+    // historico de consultas e religado pelo ConsultaService ao carregar
+    raw => {
+        const petRaw = raw as PetRaw;
+        const tutor = tutorRepository.getById(petRaw.tutorId);
+        if (!tutor) {
+            throw new Error(`Tutor ${petRaw.tutorId} nao encontrado para o pet ${petRaw.id}`);
+        }
+
+        const pet = new Pet(petRaw.id, petRaw.nome, petRaw.especie, petRaw.raca, tutor);
+        tutor.adicionarPet(pet);
+        return pet;
+    }
+);
 
 export class PetService {
-    private pets: Pet[] = [];
-
     listarPets(): Pet[] {
-        return this.pets;
+        return petRepository.getAll();
     }
 
     adicionarPet(pet: Pet): void {
-        this.pets.push(pet);
+        pet.tutor.adicionarPet(pet);
+        petRepository.add(pet);
     }
 
     buscarPorId(id: number): Pet | undefined {
-        return this.pets.find(pet => pet.id === id);
+        return petRepository.getById(id);
     }
 
     removerPet(id: number): void {
-        this.pets = this.pets.filter(pet => pet.id !== id);
+        petRepository.remove(id);
     }
 }
