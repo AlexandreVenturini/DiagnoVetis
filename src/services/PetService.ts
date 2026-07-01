@@ -47,6 +47,22 @@ export class PetService {
         return petRepository.getById(id);
     }
 
+    listarPorTutor(tutorId: number): Pet[] {
+        return petRepository.getAll().filter(p => p.tutor.id === tutorId);
+    }
+
+    listarPorEspecie(especie: string): Pet[] {
+        return petRepository.getAll().filter(p =>
+            p.especie.toLowerCase() === especie.toLowerCase()
+        );
+    }
+
+    buscarPorNome(nome: string): Pet[] {
+        return petRepository.getAll().filter(p =>
+            p.nome.toLowerCase().includes(nome.toLowerCase())
+        );
+    }
+
     removerPet(id: number): void {
         petRepository.remove(id);
     }

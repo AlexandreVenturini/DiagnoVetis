@@ -71,7 +71,23 @@ export class TutorService {
         return tutorRepository.getById(id);
     }
 
+    buscarPorNome(nome: string): Tutor[] {
+        return tutorRepository.getAll().filter(t =>
+            t.nome.toLowerCase().includes(nome.toLowerCase())
+        );
+    }
+
+    buscarPorEmail(email: string): Tutor | undefined {
+        return tutorRepository.getAll().find(t =>
+            t.email.toLowerCase() === email.toLowerCase()
+        );
+    }
+
     removerTutor(id: number): void {
         tutorRepository.remove(id);
+    }
+
+    atualizarTutor(tutor: Tutor): void {
+        tutorRepository.update(tutor);
     }
 }

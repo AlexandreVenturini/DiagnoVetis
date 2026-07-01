@@ -215,4 +215,25 @@ export class ConsultaService {
     buscarPorId(id: number): Consulta | undefined {
         return consultaRepository.getById(id);
     }
+
+    listarPorPet(petId: number): Consulta[] {
+        return consultaRepository.getAll().filter(c => c.pet.id === petId);
+    }
+
+    listarPorMedico(medicoId: number): Consulta[] {
+        return consultaRepository.getAll().filter(c => c.responsavel.id === medicoId);
+    }
+
+    listarPorData(data: Date): Consulta[] {
+        const dataStr = data.toISOString().split("T")[0];
+        return consultaRepository.getAll().filter(c =>
+            c.dataConsulta.toISOString().split("T")[0] === dataStr
+        );
+    }
+
+    listarPorAluno(alunoId: number): Consulta[] {
+        return consultaRepository.getAll().filter(c =>
+            c.alunos.some(a => a.id === alunoId)
+        );
+    }
 }

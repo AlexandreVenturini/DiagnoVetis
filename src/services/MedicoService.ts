@@ -39,6 +39,16 @@ export class MedicoService {
         return medicoRepository.getById(id);
     }
 
+    listarPorEspecialidade(especialidade: string): Medico[] {
+        return medicoRepository.getAll().filter(m =>
+            m.especialidade.toLowerCase().includes(especialidade.toLowerCase())
+        );
+    }
+
+    buscarPorCrmv(crmv: string): Medico | undefined {
+        return medicoRepository.getAll().find(m => m.crmv === crmv);
+    }
+
     removerMedico(id: number): void {
         medicoRepository.remove(id);
     }
