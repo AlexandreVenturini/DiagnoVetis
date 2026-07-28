@@ -1,121 +1,117 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import type { FormEvent } from 'react'
 import './App.css'
 
+const DEMO_USERS = [
+  { email: 'veterinario@ifes.edu.br', password: 'vet123' },
+  { email: 'atendente@ifes.edu.br', password: 'atd123' },
+]
+
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.25" />
+      <path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" />
+    </svg>
+  )
+}
+
+function LockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4.5" y="10" width="15" height="10.5" rx="1.5" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </svg>
+  )
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const validUser = DEMO_USERS.some(
+      (user) => user.email === email.trim().toLowerCase() && user.password === password,
+    )
+    setMessage(
+      validUser
+        ? 'Login realizado com sucesso!'
+        : 'E-mail ou senha incorretos. Confira as credenciais de teste.',
+    )
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <main className="login-page">
+      <section className="login-card" aria-labelledby="login-title">
+        <header className="brand">
+          <div className="brand-mark" aria-hidden="true">
+            <span className="dot dot-top" />
+            <span className="dot dot-left" />
+            <span className="dot dot-center" />
+            <span className="dot dot-right" />
+          </div>
+          <h1 id="login-title">DiagnoVetis</h1>
+          <p>IFES Santa Teresa</p>
+          <p className="brand-subtitle">Sistema de Gestão Veterinária</p>
+        </header>
+
+        <aside className="demo-box" aria-label="Credenciais de teste">
+          <p>Credenciais de teste:</p>
+          <p><strong>Veterinário:</strong> veterinario@ifes.edu.br / vet123</p>
+          <p><strong>Atendente:</strong> atendente@ifes.edu.br / atd123</p>
+        </aside>
+
+        <form onSubmit={handleSubmit} noValidate>
+          <label htmlFor="email">E-mail</label>
+          <div className="input-wrap">
+            <UserIcon />
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="seu.email@ifes.edu.br"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
+          </div>
+
+          <label htmlFor="password">Senha</label>
+          <div className="input-wrap">
+            <LockIcon />
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+          </div>
+
+          {message && (
+            <p className={message.startsWith('Login') ? 'form-message success' : 'form-message error'} role="status">
+              {message}
+            </p>
+          )}
+
+          <button className="submit-button" type="submit">Entrar</button>
+
+          <nav className="login-links" aria-label="Opções de acesso">
+            <button type="button" onClick={() => setMessage('A recuperação de senha será adicionada em uma próxima etapa.')}>Esqueceu a senha?</button>
+            <button type="button" onClick={() => setMessage('O cadastro será adicionado em uma próxima etapa.')}>Criar conta</button>
+          </nav>
+        </form>
+
+        <footer>
+          <p>Sistema de Gerenciamento de Atendimento Veterinário</p>
+          <p>IFES - Instituto Federal do Espírito Santo</p>
+        </footer>
       </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    </main>
   )
 }
 
