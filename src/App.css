@@ -18,6 +18,22 @@ button { cursor:pointer; }
 .submit-button { width:100%; height:48px; margin-top:24px; border:0; border-radius:10px; background:var(--green); color:#fff; font-size:14px; font-weight:700; }.submit-button:hover,.primary-button:hover { background:#216337; }.form-message { margin:10px 0 -12px; font-size:12px; }.form-message.error { color:#a42b2b; }
 .login-links { display:flex; justify-content:space-between; margin-top:25px; }.login-links button { padding:3px 0; border:0; background:transparent; color:var(--green-dark); font-size:14px; font-weight:600; }.login-links button:last-child { color:var(--teal); }.login-card footer { margin-top:31px; padding-top:25px; border-top:1px solid #e6e6e6; text-align:center; font-size:11px; line-height:1.45; }.login-card footer p { margin:0; }
 
+/* Criar conta */
+.register-page { width:100%; min-height:100svh; display:grid; place-items:center; padding:20px; background:linear-gradient(135deg,#327a50,#a9c9b5); }
+.register-card { width:min(100%,416px); min-height:708px; padding:28px 27px 31px; border-radius:16px; background:#fff; color:var(--text); box-shadow:0 18px 48px rgb(12 67 36 / 18%); }
+.register-brand { text-align:center; }
+.register-brand .brand-mark { width:75px; height:75px; margin-bottom:18px; }
+.register-brand .dot-top { top:17px; left:30px; }.register-brand .dot-left { top:33px; left:17px; }.register-brand .dot-center { top:38px; left:27px; }.register-brand .dot-right { top:38px; right:15px; }
+.register-brand h1 { margin:0; color:var(--green-dark); font-size:23px; line-height:1.2; font-weight:600; }
+.register-brand p { margin:11px 0 0; font-size:14px; }.register-brand .brand-subtitle { margin-top:3px; }
+.register-form { margin-top:33px; }
+.register-form > label { display:block; margin-bottom:8px; font-size:13px; font-weight:600; }
+.register-form .input-wrap { height:47px; border-radius:9px; }
+.register-form .input-wrap + label { margin-top:17px; }
+.register-form .submit-button { height:45px; margin-top:15px; border-radius:9px; box-shadow:0 5px 8px rgb(0 0 0 / 13%); }
+.register-message { margin:10px 0 -5px; font-size:12px; line-height:1.35; text-align:center; }.register-message.error { color:#a42b2b; }.register-message.success { color:var(--green-dark); }
+.back-to-login { display:block; margin:27px auto 0; padding:4px; border:0; background:transparent; color:var(--teal); font-size:12px; }.back-to-login:hover { text-decoration:underline; }
+
 /* Área veterinária */
 .app-shell { min-height:100svh; background:var(--page); color:var(--text); }
 .shell-width { width:min(1232px,calc(100% - 40px)); margin-inline:auto; }
@@ -38,5 +54,5 @@ button { cursor:pointer; }
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible { outline:2px solid var(--teal); outline-offset:3px; }
 
 @media (max-width:900px) { .dog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.main-nav { border-radius:8px; }.main-nav button { padding-inline:12px; }.dog-form { grid-template-columns:1fr; }.full-field { grid-column:auto; } }
-@media (max-width:620px) { .shell-width { width:min(100% - 28px,1232px); }.topbar { height:76px; }.dashboard-content { padding-top:22px; }.user-row { align-items:flex-start; flex-wrap:wrap; }.profile-badge { order:3; width:100%; }.logout-button { margin-top:7px; }.profile-notice { margin-top:22px; }.dog-grid { grid-template-columns:1fr; }.section-heading { align-items:flex-start; }.section-heading h2 { margin-top:8px; }.details-grid { grid-template-columns:1fr; }.detail-history { grid-column:auto; }.login-page { padding:0; align-items:start; }.login-card { width:100%; min-height:100svh; border-radius:0 16px 16px 0; box-shadow:none; } }
+@media (max-width:620px) { .shell-width { width:min(100% - 28px,1232px); }.topbar { height:76px; }.dashboard-content { padding-top:22px; }.user-row { align-items:flex-start; flex-wrap:wrap; }.profile-badge { order:3; width:100%; }.logout-button { margin-top:7px; }.profile-notice { margin-top:22px; }.dog-grid { grid-template-columns:1fr; }.section-heading { align-items:flex-start; }.section-heading h2 { margin-top:8px; }.details-grid { grid-template-columns:1fr; }.detail-history { grid-column:auto; }.login-page,.register-page { padding:0; align-items:start; }.login-card,.register-card { width:100%; min-height:100svh; border-radius:0 16px 16px 0; box-shadow:none; } }
 @media (max-width:390px) { .login-card { padding-inline:24px; }.section-heading { flex-direction:column; }.new-button { align-self:stretch; justify-content:center; }.form-actions { flex-direction:column; }.form-actions button { width:100%; } }
