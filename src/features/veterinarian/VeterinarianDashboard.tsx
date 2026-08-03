@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AppHeader } from '../../components/layout/AppHeader'
 import { MainNavigation } from '../../components/layout/MainNavigation'
 import { AppointmentsModule } from '../appointments/AppointmentsModule'
+import { ClinicalCareModule } from '../consultations/ClinicalCareModule'
 import { DogDetails } from '../dogs/DogDetails'
 import { DogForm } from '../dogs/DogForm'
 import { DogList } from '../dogs/DogList'
@@ -63,6 +64,7 @@ export function VeterinarianDashboard({ onLogout }: VeterinarianDashboardProps) 
           {screen === 'details' && selected && <DogDetails dog={selected} onBack={() => setScreen('list')} />}
         </>}
         {activeModule === 'appointments' && <AppointmentsModule />}
+        {activeModule === 'consultations' && <ClinicalCareModule />}
       </main>
     </div>
   )

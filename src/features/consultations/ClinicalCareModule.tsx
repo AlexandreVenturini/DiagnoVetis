@@ -1,0 +1,43 @@
+import { useState } from 'react'
+import { ConsultationHeader } from './ConsultationHeader'
+import { EMPTY_CONSULTATION } from './consultationTypes'
+import type { ConsultationData, ConsultationStep } from './consultationTypes'
+import { ClinicalHistoryStep } from './steps/ClinicalHistoryStep'
+import { DiagnosisStep } from './steps/DiagnosisStep'
+import { IdentificationStep } from './steps/IdentificationStep'
+import { PhysicalExamStep } from './steps/PhysicalExamStep'
+
+export function ClinicalCareModule() {
+  const [step, setStep] = useState<ConsultationStep>(1)
+  const [data, setData] = useState<ConsultationData>(EMPTY_CONSULTATION)
+  const [message, setMessage] = useState('')
+
+  function update(key: keyof ConsultationData, value: string) {
+    setData((current) => ({ ...current, [key]: value }))
+    setMessage('')
+  }
+
+  function saveRecord() {
+    setMessage('Atendimento salvo no prontuário com sucesso!')
+  }
+
+  function finish() {
+    setMessage('Atendimento finalizado. Use a opção de impressão para salvar o PDF.')
+    window.print()
+  }
+
+  return (
+    <section className="clinical-care-module">
+      <ConsultationHeader currentStep={step} onStepChange={setStep} />
+      {step === 1 && <IdentificationStep data={data} update={update} onNext={() => setStep(2)} />}
+      {step === 2 && <ClinicalHistoryStep data={data} update={update} onBack={() => setStep(1)} onNext={() => setStep(3)} />}
+      {step === 3 && <PhysicalExamStep data={data} update={update} onBack={() => setStep(2)} onNext={() => setStep(4)} />}
+      {step === 4 && <DiagnosisStep data={data} update={update} onBack={() => setStep(3)} />}
+      {message && <p className="consultation-message" role="status">{message}</p>}
+      <div className="consultation-actions">
+        <button className="record-button" onClick={saveRecord}>▣ &nbsp; Salvar no Prontuário</button>
+        <button className="finish-button" onClick={finish}>⇩ &nbsp; Finalizar e Gerar PDF</button>
+      </div>
+    </section>
+  )
+}
