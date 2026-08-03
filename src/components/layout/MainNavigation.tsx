@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 import { Icon } from '../common/Icon'
 
 const menuItems = [
-  { label: 'Cadastro', icon: 'paw' },
-  { label: 'Agendamento', icon: 'calendar' },
+  { label: 'Cadastro', icon: 'paw', module: 'dogs' },
+  { label: 'Agendamento', icon: 'calendar', module: 'appointments' },
   { label: 'Atendimento', icon: 'stethoscope' },
   { label: 'Prontuários', icon: 'file' },
   { label: 'Zoonoses', icon: 'database' },
@@ -25,11 +25,21 @@ function MenuIcon({ name }: { name: string }) {
   return <Icon>{paths[name]}</Icon>
 }
 
-export function MainNavigation() {
+type MainNavigationProps = {
+  activeModule: string
+  onSelect: (module: string) => void
+}
+
+export function MainNavigation({ activeModule, onSelect }: MainNavigationProps) {
   return (
     <nav className="main-nav" aria-label="Módulos do sistema">
-      {menuItems.map(({ label, icon }) => (
-        <button className={label === 'Cadastro' ? 'active' : ''} key={label}>
+      {menuItems.map(({ label, icon, module }) => (
+        <button
+          className={module === activeModule ? 'active' : ''}
+          key={label}
+          onClick={() => module && onSelect(module)}
+          disabled={!module}
+        >
           <MenuIcon name={icon} />
           {label}
         </button>

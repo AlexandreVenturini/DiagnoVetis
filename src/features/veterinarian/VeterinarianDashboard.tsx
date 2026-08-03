@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AppHeader } from '../../components/layout/AppHeader'
 import { MainNavigation } from '../../components/layout/MainNavigation'
+import { AppointmentsModule } from '../appointments/AppointmentsModule'
 import { DogDetails } from '../dogs/DogDetails'
 import { DogForm } from '../dogs/DogForm'
 import { DogList } from '../dogs/DogList'
@@ -12,6 +13,7 @@ type VeterinarianDashboardProps = {
 }
 
 export function VeterinarianDashboard({ onLogout }: VeterinarianDashboardProps) {
+  const [activeModule, setActiveModule] = useState('dogs')
   const [screen, setScreen] = useState<DogScreen>('list')
   const [dogs, setDogs] = useState(INITIAL_DOGS)
   const [selected, setSelected] = useState<Dog | null>(null)
@@ -47,17 +49,20 @@ export function VeterinarianDashboard({ onLogout }: VeterinarianDashboardProps) 
           <button className="logout-button" onClick={onLogout}><span>↪</span> Sair</button>
         </section>
 
-        <MainNavigation />
+        <MainNavigation activeModule={activeModule} onSelect={setActiveModule} />
 
-        <aside className="profile-notice">
+        {activeModule === 'dogs' && <aside className="profile-notice">
           <span>♧</span>
           <p><strong>Perfil Veterinário:</strong> Acesso completo a todos os módulos do sistema</p>
-        </aside>
+        </aside>}
 
-        {screen === 'list' && <DogList dogs={dogs} onCreate={() => setScreen('create')} onEdit={openEdit} onDetails={openDetails} />}
-        {screen === 'create' && <DogForm onSave={createDog} onCancel={() => setScreen('list')} />}
-        {screen === 'edit' && selected && <DogForm dog={selected} editing onSave={editDog} onCancel={() => setScreen('list')} />}
-        {screen === 'details' && selected && <DogDetails dog={selected} onBack={() => setScreen('list')} />}
+        {activeModule === 'dogs' && <>
+          {screen === 'list' && <DogList dogs={dogs} onCreate={() => setScreen('create')} onEdit={openEdit} onDetails={openDetails} />}
+          {screen === 'create' && <DogForm onSave={createDog} onCancel={() => setScreen('list')} />}
+          {screen === 'edit' && selected && <DogForm dog={selected} editing onSave={editDog} onCancel={() => setScreen('list')} />}
+          {screen === 'details' && selected && <DogDetails dog={selected} onBack={() => setScreen('list')} />}
+        </>}
+        {activeModule === 'appointments' && <AppointmentsModule />}
       </main>
     </div>
   )
