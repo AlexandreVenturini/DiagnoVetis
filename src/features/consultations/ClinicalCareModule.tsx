@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ConsultationHeader } from './ConsultationHeader'
+import { generateConsultationReport } from './consultationReport'
 import { EMPTY_CONSULTATION } from './consultationTypes'
 import type { ConsultationData, ConsultationStep } from './consultationTypes'
 import { ClinicalHistoryStep } from './steps/ClinicalHistoryStep'
@@ -22,8 +23,16 @@ export function ClinicalCareModule() {
   }
 
   function finish() {
-    setMessage('Atendimento finalizado. Use a opção de impressão para salvar o PDF.')
-    window.print()
+    if (!data.dogName || !data.tutorName || !data.veterinarian) {
+      setMessage('Preencha a identificação do paciente antes de gerar o relatório.')
+      setStep(1)
+      return
+    }
+
+    const reportOpened = generateConsultationReport(data)
+    setMessage(reportOpened
+      ? 'Relatório clínico gerado em uma nova janela.'
+      : 'Não foi possível abrir o relatório. Verifique se o navegador bloqueou a nova janela.')
   }
 
   return (
