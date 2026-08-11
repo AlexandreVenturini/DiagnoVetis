@@ -5,7 +5,7 @@ const menuItems = [
   { label: 'Cadastro', icon: 'paw', module: 'dogs' },
   { label: 'Agendamento', icon: 'calendar', module: 'appointments' },
   { label: 'Atendimento', icon: 'stethoscope', module: 'consultations' },
-  { label: 'Prontuários', icon: 'file' },
+  { label: 'Prontuários', icon: 'file', module: 'records' },
   { label: 'Zoonoses', icon: 'database' },
   { label: 'Medicamentos', icon: 'pill' },
   { label: 'Dashboard', icon: 'chart' },
