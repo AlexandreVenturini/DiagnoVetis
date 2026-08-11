@@ -1,4 +1,14 @@
 export type AppointmentKind = 'scheduled' | 'walk-in'
+export type AppointmentStatus = 'confirmed' | 'waiting' | 'in-progress' | 'completed' | 'no-show' | 'cancelled'
+export type AppointmentView = 'day' | 'week' | 'month'
+export type ReminderType = 'return' | 'vaccination'
+
+export type AppointmentReminder = {
+  id: number
+  type: ReminderType
+  date: string
+  done: boolean
+}
 
 export type Appointment = {
   id: number
@@ -10,7 +20,10 @@ export type Appointment = {
   serviceType: string
   veterinarian: string
   notes: string
+  status: AppointmentStatus
+  cancellationReason: string
+  reminders: AppointmentReminder[]
 }
 
-export type AppointmentFormData = Omit<Appointment, 'id'>
+export type AppointmentFormData = Omit<Appointment, 'id' | 'status' | 'cancellationReason' | 'reminders'>
 export type AppointmentScreen = 'list' | 'create'

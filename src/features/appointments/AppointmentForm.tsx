@@ -5,11 +5,12 @@ import { EMPTY_APPOINTMENT } from './appointmentData'
 import type { AppointmentFormData, AppointmentKind } from './appointmentTypes'
 
 type AppointmentFormProps = {
-  onSave: (data: AppointmentFormData) => void
+  onSave: (data: AppointmentFormData) => boolean
   onCancel: () => void
+  error?: string
 }
 
-export function AppointmentForm({ onSave, onCancel }: AppointmentFormProps) {
+export function AppointmentForm({ onSave, onCancel, error }: AppointmentFormProps) {
   const [form, setForm] = useState<AppointmentFormData>(EMPTY_APPOINTMENT)
 
   function update(key: keyof AppointmentFormData, value: string) {
@@ -49,6 +50,7 @@ export function AppointmentForm({ onSave, onCancel }: AppointmentFormProps) {
         <label>Veterinário Responsável<input value={form.veterinarian} onChange={(event) => update('veterinarian', event.target.value)} placeholder="Nome do veterinário" required /></label>
         <label>Observações<input value={form.notes} onChange={(event) => update('notes', event.target.value)} placeholder="Observações sobre o agendamento" /></label>
 
+        {error && <p className="form-message error full-field" role="alert">{error}</p>}
         <div className="form-actions full-field">
           <button className="primary-button" type="submit">Confirmar Agendamento</button>
           <button className="secondary-button" type="button" onClick={onCancel}>Cancelar</button>
