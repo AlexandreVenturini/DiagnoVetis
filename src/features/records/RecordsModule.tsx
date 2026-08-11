@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+import type { ChangeEvent, FormEvent, ReactNode } from 'react'
 import { Icon } from '../../components/common/Icon'
 import { INITIAL_PATIENT_RECORDS } from './recordData'
 import { exportPatientRecord } from './recordReport'
 import type { ClinicalRecord, PatientRecord, RecordKind, RecordScreen } from './recordTypes'
 
 const KIND_ICONS: Record<RecordKind, string> = { Consulta: '▤', Vacina: '+', Exame: '⚗', Tratamento: '∿', Retorno: '↻' }
-const VALIDATION_LABELS = { draft: 'Rascunho', pending: 'Aguardando validação', validated: 'Validado' }
 
 function formatDate(date: string) {
   return new Date(`${date}T12:00:00`).toLocaleDateString('pt-BR')
@@ -16,24 +15,11 @@ function splitItems(value: string) {
   return value.split('\n').map((item) => item.trim()).filter(Boolean)
 }
 
-function WeightChart({ patient }: { patient: PatientRecord }) {
-  const values = patient.weights.map((item) => item.weight)
-  const min = Math.min(...values) - 1
-  const max = Math.max(...values) + 1
-  const points = patient.weights.map((entry, index) => {
-    const x = patient.weights.length === 1 ? 50 : 5 + (index / (patient.weights.length - 1)) * 90
-    const y = 85 - ((entry.weight - min) / (max - min)) * 65
-    return `${x},${y}`
-  }).join(' ')
-  return <div className="weight-chart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Gráfico da evolução de peso"><polyline points={points} />{patient.weights.map((entry, index) => { const [x, y] = points.split(' ')[index].split(','); return <circle key={entry.date} cx={x} cy={y} r="2" /> })}</svg><div className="weight-chart-labels">{patient.weights.map((entry) => <span key={entry.date}><strong>{entry.weight} kg</strong>{formatDate(entry.date)}</span>)}</div></div>
-}
-
 export function RecordsModule() {
   const [patients, setPatients] = useState(INITIAL_PATIENT_RECORDS)
   const [screen, setScreen] = useState<RecordScreen>('list')
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [query, setQuery] = useState('')
-  const [expandedRecord, setExpandedRecord] = useState<number | null>(null)
   const [notice, setNotice] = useState('')
   const [kind, setKind] = useState<RecordKind>('Consulta')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
@@ -67,12 +53,6 @@ export function RecordsModule() {
     setScreen('details'); setNotice('Registro salvo e enviado para validação do responsável.'); setDescription(''); setDiagnosis(''); setConduct(''); setExams(''); setPrescriptions(''); setStudents(''); setAttachments([]); setWeight('')
   }
 
-  function validateRecord(recordId: number) {
-    if (!selected) return
-    updatePatient(selected.id, (patient) => ({ ...patient, records: patient.records.map((record) => record.id === recordId ? { ...record, validation: 'validated', validatedBy: record.veterinarian } : record) }))
-    setNotice('Registro validado eletronicamente pelo profissional responsável.')
-  }
-
   if (screen === 'list') return <section className="records-module">
     <div className="records-heading"><div><h2>Prontuários Clínicos</h2><p>Consulte o histórico completo dos pacientes.</p></div><div className="records-stat"><strong>{patients.length}</strong><span>pacientes acompanhados</span></div></div>
     <div className="record-search content-card"><Icon><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5" /></Icon><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome do animal ou tutor..." /></div>
@@ -101,12 +81,30 @@ export function RecordsModule() {
   </section>
 
   const latestWeight = selected.weights.at(-1)?.weight
+  const latestRecord = [...selected.records].sort((a, b) => b.date.localeCompare(a.date))[0]
   return <section className="record-details-module">
     <div className="records-heading record-detail-heading"><div><button className="text-back-button" onClick={() => setScreen('list')}>‹ Prontuários</button><h2>{selected.dogName}</h2><p>Tutor: {selected.tutorName} · {selected.breed} · {selected.age}</p></div><div className="record-header-actions"><button className="outline-button" onClick={() => { const opened = exportPatientRecord(selected); setNotice(opened ? 'Relatório aberto para impressão ou salvamento em PDF.' : 'O navegador bloqueou a janela do relatório.') }}>⇩ Exportar PDF</button><button className="primary-button" onClick={() => setScreen('create')}>+ Adicionar registro</button></div></div>
     {notice && <p className="record-notice" role="status">{notice}</p>}
-    <div className="clinical-summary-grid"><article><span>Peso atual</span><strong>{latestWeight ?? '-'} kg</strong><small>{selected.weights.length} medições</small></article><article className={selected.allergies.length ? 'clinical-alert-card' : ''}><span>Alergias</span><strong>{selected.allergies.length ? selected.allergies.join(', ') : 'Nenhuma conhecida'}</strong><small>Informação clínica importante</small></article><article><span>Doenças anteriores</span><strong>{selected.previousDiseases.join(', ') || 'Nenhuma registrada'}</strong><small>Histórico do paciente</small></article><article><span>Vacinas</span><strong>{selected.vaccines.length} registradas</strong><small>{selected.vaccines[0] ?? 'Nenhuma registrada'}</small></article></div>
-    <div className="record-overview-grid"><article className="content-card weight-panel"><div className="panel-title"><h3>Evolução do peso</h3><span>kg</span></div><WeightChart patient={selected} /></article><article className="content-card preventive-panel"><h3>Cuidados preventivos</h3><div><strong>Vacinas</strong>{selected.vaccines.map((item) => <span key={item}>✓ {item}</span>)}</div><div><strong>Alergias</strong>{selected.allergies.length ? selected.allergies.map((item) => <span className="allergy-item" key={item}>! {item}</span>) : <span>Nenhuma conhecida</span>}</div></article></div>
-    <div className="timeline-heading"><div><h3>Histórico clínico</h3><p>Registros em ordem cronológica, do mais recente ao mais antigo.</p></div><span>{selected.records.length} registros</span></div>
-    <div className="clinical-timeline">{[...selected.records].sort((a, b) => b.date.localeCompare(a.date)).map((record) => { const expanded = expandedRecord === record.id; return <article className="timeline-record" key={record.id}><div className="timeline-marker"><span className={`record-kind-icon kind-${record.kind.toLowerCase()}`}>{KIND_ICONS[record.kind]}</span></div><button className="timeline-record-summary" onClick={() => setExpandedRecord(expanded ? null : record.id)}><div><span className="record-date">{formatDate(record.date)}</span><h4>{record.kind}</h4><p>{record.description}</p><div className="record-professional"><strong>{record.veterinarian}</strong><span>{record.crmv}</span>{record.students.length > 0 && <span>Alunos: {record.students.join(', ')}</span>}</div></div><div className="record-summary-side"><span className={`validation-badge validation-${record.validation}`}>{VALIDATION_LABELS[record.validation]}</span><span className="appointment-chevron"><Icon><path d="m7 10 5 5 5-5" /></Icon></span></div></button>{expanded && <div className="timeline-record-details"><div><span>Diagnóstico</span><strong>{record.diagnosis || 'Não informado'}</strong></div><div><span>Conduta</span><strong>{record.conduct || 'Não informada'}</strong></div><div><span>Exames</span><strong>{record.exams.join(', ') || 'Nenhum'}</strong></div><div><span>Prescrições</span><strong>{record.prescriptions.join('; ') || 'Nenhuma'}</strong></div><div><span>Anexos</span><strong>{record.attachments.join(', ') || 'Nenhum anexo'}</strong></div><div><span>Validação</span><strong>{record.validation === 'validated' ? `Validado por ${record.validatedBy}` : 'Pendente do responsável'}</strong></div>{record.validation !== 'validated' && <button className="validate-button" onClick={() => validateRecord(record.id)}>✓ Validar como responsável</button>}</div>}</article>})}</div>
+    <form className="animal-record-form">
+      <header className="animal-record-title"><div className="record-logo">✚</div><div><h3>Ficha de Prontuário Animal</h3><p>Registro Clínico Veterinário · IFES Campus Santa Teresa</p></div><label>Nº do prontuário<input defaultValue={String(selected.id).padStart(4, '0')} /></label></header>
+      <div className="animal-record-grid">
+        <RecordSection number="1" title="Identificação do animal" className="half"><div className="paper-fields"><label>Nome<input defaultValue={selected.dogName} /></label><label>Espécie<input defaultValue="Canino" /></label><label>Raça<input defaultValue={selected.breed} /></label><label>Sexo<input defaultValue={selected.sex} /></label><label>Idade<input defaultValue={selected.age} /></label><label>Peso<input defaultValue={`${latestWeight ?? ''} kg`} /></label><label>Microchip<input /></label><label>Nº de cadastro<input defaultValue={String(selected.id).padStart(4, '0')} /></label></div></RecordSection>
+        <RecordSection number="2" title="Dados do tutor" className="half"><div className="paper-fields"><label>Nome<input defaultValue={selected.tutorName} /></label><label>CPF<input /></label><label>Telefone<input /></label><label>E-mail<input /></label><label className="wide">Endereço<input /></label><label className="wide">Cidade/UF<input /></label></div></RecordSection>
+        <RecordSection number="3" title="Histórico clínico" className="half"><div className="paper-fields single"><label>Queixa principal<input defaultValue={latestRecord.description} /></label><label>Histórico da doença<textarea defaultValue={latestRecord.description} /></label><label>Doenças anteriores<input defaultValue={selected.previousDiseases.join(', ')} /></label><label>Alergias<input defaultValue={selected.allergies.join(', ') || 'Nenhuma conhecida'} /></label><label>Medicamentos em uso<input defaultValue={latestRecord.prescriptions.join('; ')} /></label><label>Observações<textarea /></label></div></RecordSection>
+        <RecordSection number="4" title="Vacinação e prevenção" className="half"><table><thead><tr><th>Vacina/procedimento</th><th>Data</th><th>Dose</th><th>Próxima dose</th></tr></thead><tbody>{selected.vaccines.map((vaccine) => { const [name, dateValue = ''] = vaccine.split(' - '); return <tr key={vaccine}><td>{name}</td><td>{dateValue}</td><td></td><td></td></tr> })}<tr><td></td><td></td><td></td><td></td></tr></tbody></table><div className="paper-fields single compact"><label>Controle de pulgas<input /></label><label>Controle de carrapatos<input /></label><label>Observações<input /></label></div></RecordSection>
+        <RecordSection number="5" title="Exame físico" className="full"><div className="physical-exam-grid"><div className="paper-fields single"><label>Temperatura<input /> °C</label><label>Frequência cardíaca<input /> bpm</label><label>Frequência respiratória<input /> mpm</label><label>Mucosas<input /></label><label>TPC<input /> seg</label><label>Hidratação<input /></label></div><div className="paper-fields single"><label>Pele e pelagem<input /></label><label>Olhos<input /></label><label>Ouvidos<input /></label><label>Boca/dentes<input /></label><label>Sistema respiratório<input /></label><label>Sistema cardiovascular<input /></label></div><div className="paper-fields single"><label>Sistema gastrointestinal<input /></label><label>Sistema urinário<input /></label><label>Sistema reprodutivo<input /></label><label>Sistema neurológico<input /></label><label>Dor<input /></label><label>Observações<input /></label></div></div></RecordSection>
+        <RecordSection number="6" title="Exames solicitados" className="third"><div className="check-list">{['Hemograma','Bioquímico','Urina','Fezes','Radiografia','Ultrassonografia'].map((exam) => <label key={exam}><input type="checkbox" defaultChecked={latestRecord.exams.some((item) => item.includes(exam))} />{exam}</label>)}</div><label className="paper-textarea">Resultados<textarea /></label></RecordSection>
+        <RecordSection number="7" title="Diagnóstico" className="third"><div className="paper-fields single"><label>Suspeita clínica<textarea /></label><label>Diagnóstico definitivo<textarea defaultValue={latestRecord.diagnosis} /></label><label>Diagnósticos diferenciais<textarea /></label></div></RecordSection>
+        <RecordSection number="8" title="Tratamento" className="third"><table><thead><tr><th>Medicamento</th><th>Dose</th><th>Frequência</th></tr></thead><tbody>{latestRecord.prescriptions.map((item) => <tr key={item}><td>{item}</td><td></td><td></td></tr>)}<tr><td></td><td></td><td></td></tr></tbody></table><div className="paper-fields single compact"><label>Procedimentos<input defaultValue={latestRecord.conduct} /></label><label>Orientações ao tutor<input /></label></div></RecordSection>
+        <RecordSection number="9" title="Evolução clínica" className="two-thirds"><table><thead><tr><th>Data</th><th>Evolução/observações</th><th>Procedimentos</th><th>Responsável</th></tr></thead><tbody>{[...selected.records].sort((a,b) => b.date.localeCompare(a.date)).map((record) => <tr key={record.id}><td>{formatDate(record.date)}</td><td>{record.description}</td><td>{record.kind}</td><td>{record.veterinarian}</td></tr>)}</tbody></table></RecordSection>
+        <RecordSection number="10" title="Retorno" className="third"><div className="paper-fields single"><label>Data recomendada<input type="date" /></label><label>Motivo<input /></label><label>Exames para o retorno<input /></label><label>Observações<textarea /></label></div></RecordSection>
+        <RecordSection number="11" title="Alta" className="half"><div className="paper-fields single"><label>Data<input type="date" /></label><label>Condição na alta<input /></label><label>Orientações<textarea /></label><label>Prognóstico<input /></label></div></RecordSection>
+        <RecordSection number="12" title="Responsável pelo atendimento" className="half"><div className="paper-fields single"><label>Médico(a)-veterinário(a)<input defaultValue={latestRecord.veterinarian} /></label><label>CRMV<input defaultValue={latestRecord.crmv} /></label><label>Alunos participantes<input defaultValue={latestRecord.students.join(', ')} /></label><label>Assinatura/validação<input defaultValue={latestRecord.validatedBy} /></label><label>Data<input defaultValue={formatDate(latestRecord.date)} /></label></div></RecordSection>
+      </div><footer className="animal-record-footer">DiagnoVetis · Cuidar também é registrar</footer>
+    </form>
   </section>
+}
+
+function RecordSection({ number, title, className, children }: { number: string; title: string; className: string; children: ReactNode }) {
+  return <fieldset className={`paper-section ${className}`}><legend><span>{number}.</span> {title}</legend>{children}</fieldset>
 }
