@@ -9,6 +9,10 @@ interface PetRaw {
     especie: string;
     raca: string;
     tutorId: number;
+    idade: string;
+    peso: string;
+    sexo: string;
+    historico: string;
 }
 
 export const petRepository = new LocalStorageRepository<Pet>(
@@ -18,9 +22,12 @@ export const petRepository = new LocalStorageRepository<Pet>(
         nome: pet.nome,
         especie: pet.especie,
         raca: pet.raca,
-        tutorId: pet.tutor.id
+        tutorId: pet.tutor.id,
+        idade: pet.idade,
+        peso: pet.peso,
+        sexo: pet.sexo,
+        historico: pet.historico
     }),
-    // historico de consultas e religado pelo ConsultaService ao carregar
     raw => {
         const petRaw = raw as PetRaw;
         const tutor = tutorRepository.getById(petRaw.tutorId);
@@ -28,7 +35,7 @@ export const petRepository = new LocalStorageRepository<Pet>(
             throw new Error(`Tutor ${petRaw.tutorId} nao encontrado para o pet ${petRaw.id}`);
         }
 
-        const pet = new Pet(petRaw.id, petRaw.nome, petRaw.especie, petRaw.raca, tutor);
+        const pet = new Pet(petRaw.id, petRaw.nome, petRaw.especie, petRaw.raca, tutor, [], petRaw.idade ?? '', petRaw.peso ?? '', petRaw.sexo ?? '', petRaw.historico ?? '');
         tutor.adicionarPet(pet);
         return pet;
     }

@@ -8,7 +8,7 @@ import { ZoonosesModule } from '../zoonoses/ZoonosesModule'
 import { DogDetails } from '../dogs/DogDetails'
 import { DogForm } from '../dogs/DogForm'
 import { DogList } from '../dogs/DogList'
-import { INITIAL_DOGS } from '../dogs/dogData'
+import { useDogs } from '../../hooks/useDogs'
 import type { Dog, DogFormData, DogScreen } from '../dogs/dogTypes'
 
 type VeterinarianDashboardProps = {
@@ -18,17 +18,18 @@ type VeterinarianDashboardProps = {
 export function VeterinarianDashboard({ onLogout }: VeterinarianDashboardProps) {
   const [activeModule, setActiveModule] = useState('dogs')
   const [screen, setScreen] = useState<DogScreen>('list')
-  const [dogs, setDogs] = useState(INITIAL_DOGS)
   const [selected, setSelected] = useState<Dog | null>(null)
 
-  function createDog(data: DogFormData) {
-    setDogs((current) => [...current, { ...data, id: Date.now() }])
+  const { dogs, createDog, updateDog, removeDog } = useDogs()
+
+  function handleCreate(data: DogFormData) {
+    createDog(data)
     setScreen('list')
   }
 
-  function editDog(data: DogFormData) {
+  function handleEdit(data: DogFormData) {
     if (!selected) return
-    setDogs((current) => current.map((dog) => dog.id === selected.id ? { ...data, id: dog.id } : dog))
+    updateDog(selected.id, data)
     setScreen('list')
   }
 
@@ -40,6 +41,11 @@ export function VeterinarianDashboard({ onLogout }: VeterinarianDashboardProps) 
   function openDetails(dog: Dog) {
     setSelected(dog)
     setScreen('details')
+  }
+
+  function handleRemove(dog: Dog) {
+    removeDog(dog.id)
+    setScreen('list')
   }
 
   return (
@@ -61,9 +67,9 @@ export function VeterinarianDashboard({ onLogout }: VeterinarianDashboardProps) 
 
         {activeModule === 'dogs' && <>
           {screen === 'list' && <DogList dogs={dogs} onCreate={() => setScreen('create')} onEdit={openEdit} onDetails={openDetails} />}
-          {screen === 'create' && <DogForm onSave={createDog} onCancel={() => setScreen('list')} />}
-          {screen === 'edit' && selected && <DogForm dog={selected} editing onSave={editDog} onCancel={() => setScreen('list')} />}
-          {screen === 'details' && selected && <DogDetails dog={selected} onBack={() => setScreen('list')} />}
+          {screen === 'create' && <DogForm onSave={handleCreate} onCancel={() => setScreen('list')} />}
+          {screen === 'edit' && selected && <DogForm dog={selected} editing onSave={handleEdit} onCancel={() => setScreen('list')} />}
+          {screen === 'details' && selected && <DogDetails dog={selected} onBack={() => setScreen('list')} onRemove={() => handleRemove(selected)} />}
         </>}
         {activeModule === 'appointments' && <AppointmentsModule />}
         {activeModule === 'consultations' && <ClinicalCareModule />}

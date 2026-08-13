@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { Icon } from '../../components/common/Icon'
-import { INITIAL_ZOONOSES } from './zoonosisData'
+import { useZoonoses } from '../../hooks/useZoonoses'
 import type { PrevalenceLevel, RiskLevel, Zoonosis, ZoonosisFormData, ZoonosisScreen } from './zoonosisTypes'
 
 const EMPTY_FORM: ZoonosisFormData = { name: '', agent: '', risk: 'Médio', prevalence: 'Média', hosts: [], transmission: '', symptoms: [], diagnostics: [], prevention: [] }
@@ -9,7 +9,7 @@ const EMPTY_FORM: ZoonosisFormData = { name: '', agent: '', risk: 'Médio', prev
 function splitList(value: string) { return value.split(',').map((item) => item.trim()).filter(Boolean) }
 
 export function ZoonosesModule() {
-  const [items, setItems] = useState(INITIAL_ZOONOSES)
+  const { zoonoses: items, createZoonosis } = useZoonoses()
   const [screen, setScreen] = useState<ZoonosisScreen>('browse')
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [query, setQuery] = useState('')
@@ -29,9 +29,9 @@ export function ZoonosesModule() {
   function update<K extends keyof ZoonosisFormData>(key: K, value: ZoonosisFormData[K]) { setForm((current) => ({ ...current, [key]: value })) }
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const nextId = Math.max(0, ...items.map((item) => item.id)) + 1
-    const newItem: Zoonosis = { ...form, id: nextId, hosts: splitList(hostsText), symptoms: splitList(symptomsText), diagnostics: splitList(diagnosticsText), prevention: splitList(preventionText) }
-    setItems((current) => [...current, newItem]); setSelectedId(nextId); setScreen('browse'); setForm(EMPTY_FORM); setHostsText(''); setSymptomsText(''); setDiagnosticsText(''); setPreventionText('')
+    const newItem: ZoonosisFormData = { ...form, hosts: splitList(hostsText), symptoms: splitList(symptomsText), diagnostics: splitList(diagnosticsText), prevention: splitList(preventionText) }
+    createZoonosis(newItem)
+    setScreen('browse'); setForm(EMPTY_FORM); setHostsText(''); setSymptomsText(''); setDiagnosticsText(''); setPreventionText('')
   }
 
   return <section className="zoonoses-module">

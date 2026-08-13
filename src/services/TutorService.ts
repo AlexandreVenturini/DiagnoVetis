@@ -38,7 +38,6 @@ export const tutorRepository = new LocalStorageRepository<Tutor>(
             cep: tutor.endereco.cep
         }
     }),
-    // pets sao religados pelo PetService ao carregar (Tutor nasce sem pets aqui)
     raw => {
         const tutorRaw = raw as TutorRaw;
         return new Tutor(

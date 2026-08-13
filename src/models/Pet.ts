@@ -8,6 +8,10 @@ export class Pet {
     private _raca: string;
     private _tutor: Tutor;
     private _historicoConsulta: Consulta[];
+    private _idade: string;
+    private _peso: string;
+    private _sexo: string;
+    private _historico: string;
 
     constructor(
         id: number,
@@ -15,7 +19,11 @@ export class Pet {
         especie: string,
         raca: string,
         tutor: Tutor,
-        historicoConsulta: Consulta[] = []
+        historicoConsulta: Consulta[] = [],
+        idade: string = '',
+        peso: string = '',
+        sexo: string = '',
+        historico: string = ''
     ) {
         this._id = id;
         this._nome = nome;
@@ -23,6 +31,10 @@ export class Pet {
         this._raca = raca;
         this._tutor = tutor;
         this._historicoConsulta = historicoConsulta;
+        this._idade = idade;
+        this._peso = peso;
+        this._sexo = sexo;
+        this._historico = historico;
     }
 
     get id(): number {
@@ -91,5 +103,21 @@ export class Pet {
 
     adicionarConsulta(consulta: Consulta): void {
         this._historicoConsulta.push(consulta);
+    }
+
+    get idade(): string {
+        return this._idade;
+    }
+
+    get peso(): string {
+        return this._peso;
+    }
+
+    get sexo(): string {
+        return this._sexo;
+    }
+
+    get historico(): string {
+        return this._historico;
     }
 }
