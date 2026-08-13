@@ -68,4 +68,11 @@ export class LocalStorageRepository<T extends { id: number }> implements Reposit
         this.items = this.items.filter(item => item.id !== id);
         this.persist();
     }
+
+    clear(): void {
+        this.items = [];
+        if (typeof localStorage !== "undefined") {
+            localStorage.removeItem(this.storageKey);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import { Funcionario } from "../models/Funcionario";
 import { medicoRepository } from "./MedicoService";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarData, validarIdUnico } from "./validation/validadores";
 
 interface FuncionarioRaw {
     id: number;
@@ -31,6 +32,8 @@ export class FuncionarioService {
     }
 
     adicionarFuncionario(funcionario: Funcionario): void {
+        validarIdUnico(funcionario.id, funcionarioRepository.getAll(), "funcionário");
+        validarData(funcionario.dataAdmissao, "dataAdmissao");
         funcionarioRepository.add(funcionario);
     }
 
@@ -40,5 +43,9 @@ export class FuncionarioService {
 
     removerFuncionario(id: number): void {
         funcionarioRepository.remove(id);
+    }
+
+    atualizarFuncionario(funcionario: Funcionario): void {
+        funcionarioRepository.update(funcionario);
     }
 }
