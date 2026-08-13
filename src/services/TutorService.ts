@@ -1,6 +1,7 @@
 import { Tutor } from "../models/Tutor";
 import { Endereco } from "../models/Endereco";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarEmail, validarTelefone, validarCep, validarData, validarIdUnico } from "./validation/validadores";
 
 interface EnderecoRaw {
     rua: string;
@@ -64,6 +65,15 @@ export class TutorService {
     }
 
     adicionarTutor(tutor: Tutor): void {
+        validarIdUnico(tutor.id, tutorRepository.getAll(), "tutor");
+        validarObrigatorio(tutor.nome, "nome");
+        validarEmail(tutor.email, "email");
+        validarTelefone(tutor.telefone, "telefone");
+        validarData(tutor.dataCadastro, "dataCadastro");
+        validarObrigatorio(tutor.endereco.rua, "rua");
+        validarObrigatorio(tutor.endereco.cidade, "cidade");
+        validarObrigatorio(tutor.endereco.uf, "uf");
+        validarCep(tutor.endereco.cep, "cep");
         tutorRepository.add(tutor);
     }
 

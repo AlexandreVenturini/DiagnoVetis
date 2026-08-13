@@ -1,6 +1,7 @@
 import { Aluno } from "../models/Aluno";
 import { medicoRepository } from "./MedicoService";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarEmailIfes, validarTelefone, validarPeriodo, validarIdUnico } from "./validation/validadores";
 
 interface AlunoRaw {
     id: number;
@@ -42,6 +43,13 @@ export class AlunoService {
     }
 
     adicionarAluno(aluno: Aluno): void {
+        validarIdUnico(aluno.id, alunoRepository.getAll(), "aluno");
+        validarObrigatorio(aluno.nome, "nome");
+        validarEmailIfes(aluno.email, "email");
+        validarTelefone(aluno.telefone, "telefone");
+        validarObrigatorio(aluno.matricula, "matricula");
+        validarPeriodo(aluno.periodo, "periodo");
+        validarObrigatorio(aluno.curso, "curso");
         alunoRepository.add(aluno);
     }
 

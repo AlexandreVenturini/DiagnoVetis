@@ -1,6 +1,7 @@
 import { Pet } from "../models/Pet";
 import { tutorRepository } from "./TutorService";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarIdUnico } from "./validation/validadores";
 
 interface PetRaw {
     id: number;
@@ -39,6 +40,10 @@ export class PetService {
     }
 
     adicionarPet(pet: Pet): void {
+        validarIdUnico(pet.id, petRepository.getAll(), "pet");
+        validarObrigatorio(pet.nome, "nome");
+        validarObrigatorio(pet.especie, "especie");
+        validarObrigatorio(pet.raca, "raca");
         pet.tutor.adicionarPet(pet);
         petRepository.add(pet);
     }

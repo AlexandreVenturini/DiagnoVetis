@@ -1,5 +1,6 @@
 import { Medicamento } from "../models/Medicamento";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarPositivo, validarIdUnico } from "./validation/validadores";
 
 interface MedicamentoRaw {
     id: number;
@@ -38,6 +39,12 @@ export class MedicamentoService {
     }
 
     adicionarMedicamento(medicamento: Medicamento): void {
+        validarIdUnico(medicamento.id, medicamentoRepository.getAll(), "medicamento");
+        validarObrigatorio(medicamento.nome, "nomeComercial");
+        validarObrigatorio(medicamento.principioAtivo, "principioAtivo");
+        validarObrigatorio(medicamento.formaFarmaceutica, "formaFarmaceutica");
+        validarObrigatorio(medicamento.viaAdministracao, "viaAdministracao");
+        validarPositivo(medicamento.concentracao, "concentracao");
         medicamentoRepository.add(medicamento);
     }
 

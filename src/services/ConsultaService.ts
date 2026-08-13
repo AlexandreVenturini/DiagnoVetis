@@ -8,6 +8,7 @@ import { medicoRepository } from "./MedicoService";
 import { petRepository } from "./PetService";
 import { alunoRepository } from "./AlunoService";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarDataFutura, validarIdUnico } from "./validation/validadores";
 
 interface ExameRaw {
     id: number;
@@ -208,6 +209,9 @@ export class ConsultaService {
     }
 
     adicionarConsulta(consulta: Consulta): void {
+        validarIdUnico(consulta.id, consultaRepository.getAll(), "consulta");
+        validarDataFutura(consulta.dataConsulta, "dataConsulta");
+        validarObrigatorio(consulta.horario, "horario");
         consulta.pet.adicionarConsulta(consulta);
         consultaRepository.add(consulta);
     }

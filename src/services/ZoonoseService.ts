@@ -1,5 +1,6 @@
 import { Zoonose } from "../models/Zoonose";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarGrauRisco, validarIdUnico } from "./validation/validadores";
 
 interface ZoonoseRaw {
     id: number;
@@ -32,6 +33,12 @@ export class ZoonoseService {
     }
 
     adicionarZoonose(zoonose: Zoonose): void {
+        validarIdUnico(zoonose.id, zoonoseRepository.getAll(), "zoonose");
+        validarObrigatorio(zoonose.nome, "nome");
+        validarObrigatorio(zoonose.agenteEtiologico, "agenteEtiologico");
+        validarObrigatorio(zoonose.sintomas, "sintomas");
+        validarObrigatorio(zoonose.medidasPreventivas, "medidasPreventivas");
+        validarGrauRisco(zoonose.grauRisco, "grauRisco");
         zoonoseRepository.add(zoonose);
     }
 

@@ -1,5 +1,6 @@
 import { Medico } from "../models/Medico";
 import { LocalStorageRepository } from "./storage/LocalStorageRepository";
+import { validarObrigatorio, validarEmail, validarTelefone, validarCrmv, validarIdUnico } from "./validation/validadores";
 
 interface MedicoRaw {
     id: number;
@@ -32,6 +33,12 @@ export class MedicoService {
     }
 
     adicionarMedico(medico: Medico): void {
+        validarIdUnico(medico.id, medicoRepository.getAll(), "médico");
+        validarObrigatorio(medico.nome, "nome");
+        validarEmail(medico.email, "email");
+        validarTelefone(medico.telefone, "telefone");
+        validarObrigatorio(medico.especialidade, "especialidade");
+        validarCrmv(medico.crmv, "crmv");
         medicoRepository.add(medico);
     }
 
