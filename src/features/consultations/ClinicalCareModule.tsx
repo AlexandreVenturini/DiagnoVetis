@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useConsultas } from '../../hooks/useConsultas'
 import { ConsultationHeader } from './ConsultationHeader'
 import { generateConsultationReport } from './consultationReport'
 import { EMPTY_CONSULTATION } from './consultationTypes'
@@ -12,6 +13,7 @@ export function ClinicalCareModule() {
   const [step, setStep] = useState<ConsultationStep>(1)
   const [data, setData] = useState<ConsultationData>(EMPTY_CONSULTATION)
   const [message, setMessage] = useState('')
+  const { salvarConsulta } = useConsultas()
 
   function update(key: keyof ConsultationData, value: string) {
     setData((current) => ({ ...current, [key]: value }))
@@ -19,7 +21,20 @@ export function ClinicalCareModule() {
   }
 
   function saveRecord() {
-    setMessage('Atendimento salvo no prontuário com sucesso!')
+    if (!data.dogName || !data.tutorName || !data.veterinarian) {
+      setMessage('Preencha a identificação do paciente antes de salvar.')
+      setStep(1)
+      return
+    }
+
+    const resultado = salvarConsulta(data)
+    if (resultado.sucesso) {
+      setMessage('Atendimento salvo no prontuário com sucesso!')
+      setData(EMPTY_CONSULTATION)
+      setStep(1)
+    } else {
+      setMessage(resultado.erro ?? 'Erro ao salvar o atendimento.')
+    }
   }
 
   function finish() {
